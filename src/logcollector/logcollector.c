@@ -80,7 +80,6 @@ void LogCollectorStart()
                 logff[i].file = NULL;
                 logff[i].command = NULL;
                 logff[i].fp = NULL;
-                logff[i].ptr = NULL;
 
                 break;
             }
@@ -100,7 +99,6 @@ void LogCollectorStart()
             logff[i].file = NULL;
             logff[i].command = NULL;
             logff[i].fp = NULL;
-            logff[i].ptr = NULL;
         }
 
         else if (strcmp(logff[i].logformat, "eventchannel") == 0) {
@@ -118,13 +116,11 @@ void LogCollectorStart()
             logff[i].file = NULL;
             logff[i].command = NULL;
             logff[i].fp = NULL;
-            logff[i].ptr = NULL;
         }
 
         else if (strcmp(logff[i].logformat, "command") == 0) {
             logff[i].file = NULL;
             logff[i].fp = NULL;
-            logff[i].ptr = NULL;
             logff[i].size = 0;
 
             if (logff[i].command) {
@@ -142,7 +138,6 @@ void LogCollectorStart()
         } else if (strcmp(logff[i].logformat, "full_command") == 0) {
             logff[i].file = NULL;
             logff[i].fp = NULL;
-            logff[i].ptr = NULL;
             logff[i].size = 0;
             if (logff[i].command) {
                 logff[i].read = read_fullcommand;
@@ -156,17 +151,6 @@ void LogCollectorStart()
                 merror("%s: ERROR: Missing command argument. Ignoring it.",
                        ARGV0);
             }
-        }
-        else if (strcmp(logff[i].logformat, "journald") == 0) {
-#ifdef HAVE_SYSTEMD
-            verbose(READING_JOURNAL, ARGV0, logff[i].file);
-            logff[i].read = sd_read_journal;
-#else
-            merror("%s: WARN: journald not available on this version of OSSEC", ARGV0);
-#endif
-            logff[i].command = NULL;
-            logff[i].fp = NULL;
-            logff[i].ptr = NULL;
         }
 
         else {
@@ -211,7 +195,6 @@ void LogCollectorStart()
                     if (logff[i].fp) {
                         fclose(logff[i].fp);
                         logff[i].fp = NULL;
-                        logff[i].ptr = NULL;
                     }
                     logff[i].file = NULL;
                 }
@@ -289,7 +272,7 @@ void LogCollectorStart()
         for (i = 0; i <= max_file; i++) {
             if (!logff[i].fp) {
                 /* Run the command */
-                if ((logff[i].command || !strncmp(logff[i].logformat, "journald", 7)) && (f_check % 2)) {
+                if (logff[i].command && (f_check % 2)) {
                     curr_time = time(0);
                     if ((curr_time - logff[i].size) >= logff[i].ign) {
                         logff[i].size = curr_time;

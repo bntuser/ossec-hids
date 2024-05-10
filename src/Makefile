@@ -29,7 +29,6 @@ USE_ZEROMQ?=no
 USE_GEOIP?=no
 USE_INOTIFY=no
 USE_PCRE2_JIT=yes
-USE_SYSTEMD?=yes
 
 ifneq (${TARGET},winagent)
 	USE_OPENSSL?=auto
@@ -65,12 +64,8 @@ OSSEC_LDFLAGS=${LDFLAGS} -lm
 ifneq (${TARGET},winagent)
 ifeq (${uname_S},Linux)
 		DEFINES+=-DINOTIFY_ENABLED
-		OSSEC_LDFLAGS+=-lpthread
-ifeq (${USE_SYSTEMD},yes)
-		DEFINES+=-DHAVE_SYSTEMD
-		OSSEC_LDFLAGS+=-lsystemd
-endif
 #		DEFINES+=-DUSE_MAGIC
+		OSSEC_LDFLAGS+=-lpthread
 #		OSSEC_LDFLAGS+=-lmagic
 else
 ifeq (${uname_S},AIX)
@@ -620,7 +615,6 @@ settings:
 	@echo "    USE_INOTIFY:      ${USE_INOTIFY}"
 	@echo "    USE_SQLITE:       ${USE_SQLITE}"
 	@echo "    USE_PCRE2_JIT:    ${USE_PCRE2_JIT}"
-	@echo "    USE_SYSTEMD:      ${USE_SYSTEMD}"
 	@echo "Mysql settings:"
 	@echo "    includes:         ${MI}"
 	@echo "    libs:             ${ML}"
